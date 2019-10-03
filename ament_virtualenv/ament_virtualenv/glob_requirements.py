@@ -28,9 +28,15 @@ from queue import Queue
 
 # from catkin.find_in_workspaces import find_in_workspaces
 
-def find_in_workspaces(project, path):
-    paths = [path for path in os.environ.get('AMENT_PREFIX_PATH', '').split(os.pathsep) if path]
-    workspaces = [path for path in paths if '/install/' in path]
+def find_in_workspaces(project, file):
+    paths = os.environ.get('AMENT_PREFIX_PATH')
+    if not paths:
+        return None
+    paths = paths.split(os.pathsep)
+    workspaces = []
+    for path in paths:
+        if '/install/' in path:
+            workspaces.append(path)
     # should be at share/ament_virtualenv/
     search_dirs = ['etc', 'include', 'libexec', 'share']
     if 'libexec' in search_dirs:
@@ -38,11 +44,11 @@ def find_in_workspaces(project, path):
     for workspace in (workspaces or []):
         for sub in search_dirs:
             p = os.path.join(workspace, sub)
-            p = os.path.join(p, path)
+            p = os.path.join(p, file)
             if os.path.exists(p):
                 return p
             if sub=='share':
-                p = os.path.join(workspace, sub, project, path)
+                p = os.path.join(workspace, sub, project, file)
                 if os.path.exists(p):
                     return p
     # none found:
@@ -63,7 +69,7 @@ def parse_exported_requirements(package):
         if export.tagname == AMENT_VIRTUALENV_TAGNAME:
             requirements_path = find_in_workspaces(
                 project=package.name,
-                path=export.content
+                file=export.content
             )
             if not requirements_path:
                 print("Package {package} declares <{tagname}> {file}, which cannot be found in the package".format(
@@ -77,7 +83,7 @@ def process_package(package_name, soft_fail=True):
     # type: (str) -> List[str], List[str]
     package_path = find_in_workspaces(
         project=package_name,
-        path="package.xml"
+        file="package.xml"
     )
     if not package_path:
         if not soft_fail:
@@ -122,3 +128,7 @@ def main(argv=sys.argv[1:]):
     args, unknown = parser.parse_known_args()
     return glob_requirements(**vars(args))
 #
+
+
+if __name__ == "__main__":
+    main()

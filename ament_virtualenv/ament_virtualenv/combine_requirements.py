@@ -84,3 +84,7 @@ def main(argv=sys.argv[1:]):
 
     return combine_requirements(**vars(args))
 #
+
+
+if __name__ == "__main__":
+    main()
