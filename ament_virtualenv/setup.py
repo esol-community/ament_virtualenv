@@ -11,11 +11,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
     ],
     install_requires=['setuptools'],
-    package_data={'': [
-        'src/catkin_virtualenv',
-        'src/dh_virtualenv',
-    ]},
-    zip_safe=True,
+    zip_safe=False,
     author='Max Krichenbauer',
     author_email='v-krichenbauer7715@esol.co.jp',
     maintainer='Max Krichenbauer',

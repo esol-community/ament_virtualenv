@@ -78,9 +78,7 @@ function(ament_generate_virtualenv)
 
   # Include common requirements that ROS makes available in system environment for py2
   list(APPEND requirements_list ${ament_cmake_virtualenv_DIR}/common_requirements.txt)
-
   set(generated_requirements ${CMAKE_BINARY_DIR}/generated_requirements.txt)
-
   # Trigger a re-configure if any requirements file changes
   foreach(requirements_txt ${requirements_list})
     stamp(${requirements_txt})

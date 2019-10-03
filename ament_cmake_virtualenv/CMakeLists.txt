@@ -14,10 +14,9 @@ install(
 )
 
 if(BUILD_TESTING)
-  # find_package(roslint REQUIRED)
-  # roslint_python()
-  # roslint_add_test()
+  find_package(ament_cmake_copyright REQUIRED)
+  ament_copyright()
 
-  # catkin_add_nosetests(test)
-  # TODO: add some linters
+  find_package(ament_cmake_lint_cmake REQUIRED)
+  ament_lint_cmake()
 endif()
