@@ -1,32 +1,37 @@
 #!/usr/bin/env python
-# Software License Agreement (GPL)
+#
+# Copyright 2019 eSOL Co.,Ltd.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 #
 # \file      glob_requirements
 # \authors   Max Krichenbauer <v-krichenbauer7715@esol.co.jp>
 # \copyright Copyright (c) (2019), eSol, All rights reserved.
 #
-# This program is free software: you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation, either version 2 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import print_function
 
 import argparse
 import sys
 import os
-
+# from catkin_pkg.package import parse_package
+from ament_virtualenv.package import parse_package
 # from Queue import Queue
 from queue import Queue
 
 # from catkin.find_in_workspaces import find_in_workspaces
+
 
 def find_in_workspaces(project, file):
     paths = os.environ.get('AMENT_PREFIX_PATH')
@@ -47,7 +52,7 @@ def find_in_workspaces(project, file):
             p = os.path.join(p, file)
             if os.path.exists(p):
                 return p
-            if sub=='share':
+            if sub == 'share':
                 p = os.path.join(workspace, sub, project, file)
                 if os.path.exists(p):
                     return p
@@ -55,9 +60,6 @@ def find_in_workspaces(project, file):
     return None
 #
 
-
-# from catkin_pkg.package import parse_package
-from ament_virtualenv.package import parse_package
 
 AMENT_VIRTUALENV_TAGNAME = "pip_requirements"
 
@@ -72,8 +74,15 @@ def parse_exported_requirements(package):
                 file=export.content
             )
             if not requirements_path:
-                print("Package {package} declares <{tagname}> {file}, which cannot be found in the package".format(
-                    package=package.name, tagname=AMENT_VIRTUALENV_TAGNAME, file=export.content), file=sys.stderr)
+                print(
+                    ("Package {package} declares <{tagname}> {file}, "
+                     "which cannot be found in the package").format(
+                        package=package.name,
+                        tagname=AMENT_VIRTUALENV_TAGNAME,
+                        file=export.content
+                    ),
+                    file=sys.stderr
+                )
             else:
                 requirements_list.append(requirements_path)
     return requirements_list

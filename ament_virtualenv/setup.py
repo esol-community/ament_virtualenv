@@ -16,8 +16,8 @@ setup(
     author_email='v-krichenbauer7715@esol.co.jp',
     maintainer='Max Krichenbauer',
     maintainer_email='v-krichenbauer7715@esol.co.jp',
-    url='https://github.com/ament/ament_lint',
-    download_url='https://github.com/ament/ament_lint/releases',
+    url='https://github.com/esol-community/ament_virtualenv',
+    download_url='https://github.com/esol-community/ament_virtualenv/releases',
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',
@@ -25,11 +25,9 @@ setup(
         'Programming Language :: Python',
         'Topic :: Software Development',
     ],
-    description='',
-    long_description="""\
-.""",
+    description='Generating a Python virtualenv and installing required packages in it',
     license='Apache License, Version 2.0',
-    tests_require=[],
+    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'build_venv = ament_virtualenv.build_venv:main',

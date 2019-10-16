@@ -3,19 +3,21 @@
 # Copyright (c) 2012, Willow Garage, Inc.
 # All rights reserved.
 #
+# Software License Agreement (BSD License 2.0)
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
 # are met:
 #
-#  * Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-#  * Redistributions in binary form must reproduce the above
-#    copyright notice, this list of conditions and the following
-#    disclaimer in the documentation and/or other materials provided
-#    with the distribution.
-#  * Neither the name of Willow Garage, Inc. nor the names of its
-#    contributors may be used to endorse or promote products derived
-#    from this software without specific prior written permission.
+# * Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
+# * Redistributions in binary form must reproduce the above
+#   copyright notice, this list of conditions and the following
+#   disclaimer in the documentation and/or other materials provided
+#   with the distribution.
+# * Neither the name of {copyright_holder} nor the names of its
+#   contributors may be used to endorse or promote products derived
+#   from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,6 +31,7 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+#
 
 """Library for parsing package.xml and providing an object representation."""
 
@@ -111,7 +114,11 @@ class Package(object):
             # merge different dependencies if they are not exactly equal
             # potentially having the same dependency name multiple times with different attributes
             run_depends = []
-            [run_depends.append(deepcopy(d)) for d in self.exec_depends + self.build_export_depends if d not in run_depends]
+            [
+                run_depends.append(deepcopy(d))
+                for d in self.exec_depends + self.build_export_depends
+                if d not in run_depends
+            ]
             return run_depends
         raise AttributeError(name)
 
@@ -162,7 +169,8 @@ class Package(object):
         """
         Return True if this package has invalid dependencies for a metapackage.
 
-        This is defined by REP-0127 as any non-run_depends dependencies other then a buildtool_depend on catkin.
+        This is defined by REP-0127 as any non-run_depends dependencies
+        other then a buildtool_depend on catkin.
 
         :returns: True if the given package has any invalid dependencies, otherwise False
         :rtype: bool
@@ -179,7 +187,6 @@ class Package(object):
         """
         return 'metapackage' in (e.tagname for e in self.exports)
 
-
     def validate(self, warnings=None):
         """
         Make sure all standards for packages are met.
@@ -193,7 +200,10 @@ class Package(object):
 
         if self.package_format:
             if not re.match('^[1-9][0-9]*$', str(self.package_format)):
-                errors.append('The "format" attribute of the package must contain a positive integer if present')
+                errors.append(
+                    'The "format" attribute of the package must '
+                    'contain a positive integer if present'
+                )
 
         if not self.name:
             errors.append('Package name must not be empty')
@@ -203,16 +213,23 @@ class Package(object):
         else:
             if not re.match('^[a-z][a-z0-9_-]*$', self.name):
                 new_warnings.append(
-                    'Package name "%s" does not follow the naming conventions. It should start with '
-                    'a lower case letter and only contain lower case letters, digits, underscores, and dashes.' % self.name)
+                    'Package name "%s" does not follow the naming conventions. It should start '
+                    'with a lower case letter and only contain lower case letters, digits, '
+                    'underscores, and dashes.' % self.name)
 
         version_regexp = '^[0-9]+\.[0-9]+\.[0-9]+$'
         if not self.version:
             errors.append('Package version must not be empty')
         elif not re.match(version_regexp, self.version):
-            errors.append('Package version "%s" does not follow version conventions' % self.version)
+            errors.append(
+                'Package version "%s" does not follow version conventions'
+                % self.version
+            )
         elif not re.match('^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$', self.version):
-            new_warnings.append('Package "%s" does not follow the version conventions. It should not contain leading zeros (unless the number is 0).' % self.name)
+            new_warnings.append(
+                'Package "%s" does not follow the version conventions. '
+                'It should not contain leading zeros (unless the number is 0).' % self.name
+            )
         if self.version_compatibility:
             if not re.match(version_regexp, self.version_compatibility):
                 errors.append(
@@ -256,7 +273,10 @@ class Package(object):
         for dep_type, depends in dep_types.items():
             for depend in depends:
                 if depend.name == self.name:
-                    errors.append('The package "%s" must not "%s_depend" on a package with the same name as this package' % (self.name, dep_type))
+                    errors.append(
+                        'The package "%s" must not "%s_depend" on a package with the '
+                        'same name as this package' % (self.name, dep_type)
+                    )
 
         if (
             set([d.name for d in self.group_depends]) &
@@ -269,11 +289,15 @@ class Package(object):
         if self.is_metapackage():
             if not self.has_buildtool_depend_on_catkin():
                 # TODO escalate to error in the future, or use metapackage.validate_metapackage
-                new_warnings.append('Metapackage "%s" must buildtool_depend on catkin.' % self.name)
+                new_warnings.append(
+                    'Metapackage "%s" must buildtool_depend on catkin.' % self.name
+                )
             if self.has_invalid_metapackage_dependencies():
-                new_warnings.append('Metapackage "%s" should not have other dependencies besides a '
-                                    'buildtool_depend on catkin and %s.' %
-                                    (self.name, 'run_depends' if self.package_format == 1 else 'exec_depends'))
+                new_warnings.append(
+                    'Metapackage "%s" should not have other dependencies besides a '
+                    'buildtool_depend on catkin and %s.' %
+                    (self.name, 'run_depends' if self.package_format == 1 else 'exec_depends')
+                )
 
         for warning in new_warnings:
             if warnings is None:
@@ -314,7 +338,6 @@ class Dependency(object):
 
     def __str__(self):
         return self.name
-
 
 
 class Export(object):
@@ -365,7 +388,11 @@ class Person(object):
     def validate(self):
         if self.email is None:
             return
-        if not re.match('^[-a-zA-Z0-9_%+]+(\.[-a-zA-Z0-9_%+]+)*@[-a-zA-Z0-9%]+(\.[-a-zA-Z0-9%]+)*\.[a-zA-Z]{2,}$', self.email):
+        _pattern = (
+            '^[-a-zA-Z0-9_%+]+(\.[-a-zA-Z0-9_%+]+)*'
+            '@[-a-zA-Z0-9%]+(\.[-a-zA-Z0-9%]+)*\.[a-zA-Z]{2,}$'
+        )
+        if not re.match(_pattern, self.email):
             raise InvalidPackage('Invalid email "%s" for person "%s"' % (self.email, self.name))
 
 
@@ -381,8 +408,12 @@ class Url(object):
 
 
 def parse_package_for_distutils(path=None):
-    print('WARNING: %s/setup.py: catkin_pkg.package.parse_package_for_distutils() is deprecated. Please use catkin_pkg.python_setup.generate_distutils_setup(**kwargs) instead.' %
-          os.path.basename(os.path.abspath('.')))
+    print(
+        'WARNING: %s/setup.py: catkin_pkg.package.parse_package_for_distutils() '
+        'is deprecated. Please use catkin_pkg.python_setup.generate_distutils_setup'
+        '(**kwargs) instead.' %
+        os.path.basename(os.path.abspath('.'))
+    )
     from .python_setup import generate_distutils_setup
     data = {}
     if path is not None:
@@ -429,9 +460,11 @@ def _get_package_xml(path):
     elif package_exists_at(path):
         filename = os.path.join(path, PACKAGE_MANIFEST_FILENAME)
         if not os.path.isfile(filename):
-            raise IOError('Directory "%s" does not contain a "%s"' % (path, PACKAGE_MANIFEST_FILENAME))
+            raise IOError('Directory "%s" does not contain a "%s"'
+                          % (path, PACKAGE_MANIFEST_FILENAME))
     else:
-        raise IOError('Path "%s" is neither a directory containing a "%s" file nor a file' % (path, PACKAGE_MANIFEST_FILENAME))
+        raise IOError('Path "%s" is neither a directory containing a "%s" file nor a file'
+                      % (path, PACKAGE_MANIFEST_FILENAME))
 
     # Force utf8 encoding for python3.
     # This way unicode files can still be processed on non-unicode locales.
@@ -463,9 +496,12 @@ def _check_known_attributes(node, known):
     if node.hasAttributes():
         attrs = map(str, node.attributes.keys())
         # colon is the namespace separator in attributes, xmlns can be added to any tag
-        unknown_attrs = [attr for attr in attrs if not (attr in known or attr == 'xmlns' or ':' in attr)]
+        unknown_attrs = [
+            attr for attr in attrs if not (attr in known or attr == 'xmlns' or ':' in attr)
+        ]
         if unknown_attrs:
-            return ['The "%s" tag must not have the following attributes: %s' % (node.tagName, ', '.join(unknown_attrs))]
+            return ['The "%s" tag must not have the following attributes: %s'
+                    % (node.tagName, ', '.join(unknown_attrs))]
     return []
 
 
@@ -499,7 +535,8 @@ def parse_package_string(data, filename=None, warnings=None):
     pkg.package_format = int(value)
     assert pkg.package_format in (1, 2, 3), \
         "Unable to handle package.xml format version '%d', please update catkin_pkg " \
-        '(e.g. on Ubuntu/Debian use: sudo apt-get update && sudo apt-get install --only-upgrade python-catkin-pkg)' % pkg.package_format
+        '(e.g. on Ubuntu/Debian use: sudo apt-get update && sudo apt-get install ' \
+        '--only-upgrade python-catkin-pkg)' % pkg.package_format
 
     # name
     pkg.name = _get_node_value(_get_node(root, 'name', filename))
@@ -511,7 +548,10 @@ def parse_package_string(data, filename=None, warnings=None):
         version_node, 'compatibility', default=None)
 
     # description
-    pkg.description = _get_node_value(_get_node(root, 'description', filename), allow_xml=True, apply_str=False)
+    pkg.description = _get_node_value(
+        _get_node(root, 'description', filename),
+        allow_xml=True, apply_str=False
+    )
 
     # at least one maintainer, all must have email
     maintainers = _get_nodes(root, 'maintainer')
@@ -562,10 +602,17 @@ def parse_package_string(data, filename=None, warnings=None):
         for dep in depends:
             # check for collisions with specific dependencies
             same_build_depends = ['build_depend' for d in pkg.build_depends if d.name == dep.name]
-            same_build_export_depends = ['build_export_depend' for d in pkg.build_export_depends if d.name == dep.name]
+            same_build_export_depends = [
+                'build_export_depend' for d in pkg.build_export_depends if d.name == dep.name
+            ]
             same_exec_depends = ['exec_depend' for d in pkg.exec_depends if d.name == dep.name]
             if same_build_depends or same_build_export_depends or same_exec_depends:
-                errors.append("The generic dependency on '%s' is redundant with: %s" % (dep.name, ', '.join(same_build_depends + same_build_export_depends + same_exec_depends)))
+                errors.append(
+                    "The generic dependency on '%s' is redundant with: %s"
+                    % (dep.name, ', '.join(same_build_depends +
+                                           same_build_export_depends +
+                                           same_exec_depends))
+                )
             # only append non-duplicates
             if not same_build_depends:
                 pkg.build_depends.append(deepcopy(dep))
@@ -584,10 +631,17 @@ def parse_package_string(data, filename=None, warnings=None):
 
     if pkg.package_format == 1:
         for test_depend in pkg.test_depends:
-            same_build_depends = ['build_depend' for d in pkg.build_depends if d.name == test_depend.name]
-            same_run_depends = ['run_depend' for d in pkg.run_depends if d.name == test_depend.name]
+            same_build_depends = [
+                'build_depend' for d in pkg.build_depends if d.name == test_depend.name
+            ]
+            same_run_depends = [
+                'run_depend' for d in pkg.run_depends if d.name == test_depend.name
+            ]
             if same_build_depends or same_run_depends:
-                errors.append('The test dependency on "%s" is redundant with: %s' % (test_depend.name, ', '.join(same_build_depends + same_run_depends)))
+                errors.append(
+                    'The test dependency on "%s" is redundant with: %s'
+                    % (test_depend.name, ', '.join(same_build_depends + same_run_depends))
+                )
 
     # exports
     export_node = _get_optional_node(root, 'export', filename)
@@ -644,17 +698,27 @@ def parse_package_string(data, filename=None, warnings=None):
     nodes = [n for n in root.childNodes if n.nodeType == n.ELEMENT_NODE]
     unknown_tags = set([n.tagName for n in nodes if n.tagName not in known.keys()])
     if unknown_tags:
-        errors.append('The manifest of package "%s" (with format version %d) must not contain the following tags: %s' % (pkg.name, pkg.package_format, ', '.join(unknown_tags)))
+        errors.append(
+            'The manifest of package "%s" (with format version %d) must '
+            'not contain the following tags: %s'
+            % (pkg.name, pkg.package_format, ', '.join(unknown_tags))
+        )
     if 'run_depend' in unknown_tags and pkg.package_format >= 2:
         errors.append('Please replace <run_depend> tags with <exec_depend> tags.')
     elif 'exec_depend' in unknown_tags and pkg.package_format < 2:
-        errors.append('Either update to a newer format or replace <exec_depend> tags with <run_depend> tags.')
+        errors.append(
+            'Either update to a newer format '
+            'or replace <exec_depend> tags with <run_depend> tags.'
+        )
     for node in [n for n in nodes if n.tagName in known.keys()]:
         errors += _check_known_attributes(node, known[node.tagName])
         if node.tagName not in ['description', 'export']:
             subnodes = [n for n in node.childNodes if n.nodeType == n.ELEMENT_NODE]
             if subnodes:
-                errors.append('The "%s" tag must not contain the following children: %s' % (node.tagName, ', '.join([n.tagName for n in subnodes])))
+                errors.append(
+                    'The "%s" tag must not contain the following children: %s'
+                    % (node.tagName, ', '.join([n.tagName for n in subnodes]))
+                )
 
     if errors:
         raise InvalidPackage('Error(s):%s' % (''.join(['\n- %s' % e for e in errors])), filename)
@@ -678,7 +742,8 @@ def _get_node(parent, tagname, filename):
 def _get_optional_node(parent, tagname, filename):
     nodes = _get_nodes(parent, tagname)
     if len(nodes) > 1:
-        raise InvalidPackage('The manifest must not contain more than one "%s" tags' % tagname, filename)
+        raise InvalidPackage('The manifest must not contain more than one "%s" tags'
+                             % tagname, filename)
     return nodes[0] if nodes else None
 
 
@@ -686,7 +751,10 @@ def _get_node_value(node, allow_xml=False, apply_str=True):
     if allow_xml:
         value = (''.join([n.toxml() for n in node.childNodes])).strip(' \n\r\t')
     else:
-        value = (''.join([n.data for n in node.childNodes if n.nodeType == n.TEXT_NODE])).strip(' \n\r\t')
+        value = (
+            ''.join([n.data
+                     for n in node.childNodes
+                     if n.nodeType == n.TEXT_NODE])).strip(' \n\r\t')
     if apply_str:
         value = str(value)
     return value
@@ -697,7 +765,8 @@ def _get_node_attr(node, attr, default=False):
     if node.hasAttribute(attr):
         return str(node.getAttribute(attr))
     if default is False:
-        raise InvalidPackage('The "%s" tag must have the attribute "%s"' % (node.tagName, attr))
+        raise InvalidPackage('The "%s" tag must have the attribute "%s"'
+                             % (node.tagName, attr))
     return default
 
 
@@ -705,13 +774,14 @@ def _get_dependencies(parent, tagname):
     depends = []
     for node in _get_nodes(parent, tagname):
         depend = Dependency(_get_node_value(node))
-        for attr in ('version_lt', 'version_lte', 'version_eq', 'version_gte', 'version_gt', 'condition'):
+        for attr in ('version_lt', 'version_lte', 'version_eq',
+                     'version_gte', 'version_gt', 'condition'):
             setattr(depend, attr, _get_node_attr(node, attr, None))
         depends.append(depend)
     return depends
 
 
-#def _get_group_dependencies(parent, tagname):
+# def _get_group_dependencies(parent, tagname):
 #    from .group_dependency import GroupDependency
 #    depends = []
 #    for node in _get_nodes(parent, tagname):
@@ -722,7 +792,7 @@ def _get_dependencies(parent, tagname):
 #    return depends
 
 
-#def _get_group_memberships(parent, tagname):
+# def _get_group_memberships(parent, tagname):
 #    from .group_membership import GroupMembership
 #    memberships = []
 #    for node in _get_nodes(parent, tagname):

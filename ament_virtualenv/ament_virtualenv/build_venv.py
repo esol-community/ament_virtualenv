@@ -1,22 +1,25 @@
 #!/usr/bin/env python
-# Software License Agreement (GPL)
+#
+# Copyright 2019 eSol Co.,Ltd.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 #
 # \file      build_venv
 # \authors   Max Krichenbauer <v-krichenbauer7715@esol.co.jp>
-# \copyright Copyright (c) (2019), eSol, All rights reserved.
+# \copyright Copyright (c) (2019), eSol Co.,Ltd., All rights reserved.
 #
-# This program is free software: you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation, either version 2 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import print_function
 
 import argparse
@@ -39,17 +42,22 @@ def delete_bytecode(directory):
             if _BYTECODE_REGEX.match(f):
                 os.remove(os.path.join(root, f))
 
+
 def find_python(version):
     python_executable = find_executable('python' + version)
     if not python_executable:
-        raise RuntimeError("Unable to find python executable 'python{}''".format(args.python_version))
+        raise RuntimeError("Unable to find python executable 'python{}''".format(version))
     return python_executable
+
 
 def check_module(python_executable, module):
     try:
         with open(os.devnull, 'w') as devnull:
             # "-c 'import venv'" does not work with the subprocess module, but '-cimport venv' does
-            subprocess.check_call([python_executable, '-cimport {}'.format(module)], stderr=devnull)
+            subprocess.check_call(
+                [python_executable, '-cimport {}'.format(module)],
+                stderr=devnull
+            )
         return True
     except subprocess.CalledProcessError:
         return False
@@ -57,19 +65,41 @@ def check_module(python_executable, module):
 
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser(
-        description="Build a virtualenv, and rewrite the internal paths with an arbitrary root directory.")
+        description=(
+            "Build a virtualenv, and rewrite the internal paths with an arbitrary root directory."
+        )
+    )
     parser.add_argument(
-        '--requirements', required=True, help="A requirements.txt file specifying dependencies.")
+        '--requirements',
+        required=True,
+        help="A requirements.txt file specifying dependencies."
+    )
     parser.add_argument(
-        '--root-dir', required=True, help="Directory to which the virtualenv's hardcoded paths should be rewritten.")
+        '--root-dir',
+        required=True,
+        help="Directory to which the virtualenv's hardcoded paths should be rewritten."
+    )
     parser.add_argument(
-        '--python-version', help="Build the virtualenv with which python major version.")
+        '--python-version',
+        help="Build the virtualenv with which python major version."
+    )
     parser.add_argument(
-        '--retries', type=int, default=0, help="Number of times to retry buiding virtualenv.")
+        '--retries',
+        type=int,
+        default=0,
+        help="Number of times to retry buiding virtualenv."
+    )
     parser.add_argument(
-        '--use-system-packages', action="store_true", help="Use system site packages.")
+        '--use-system-packages',
+        action="store_true",
+        help="Use system site packages."
+    )
     parser.add_argument(
-        '--extra-pip-args', default="\"\"", type=str, help="Extra pip args for install.")
+        '--extra-pip-args',
+        default="\"\"",
+        type=str,
+        help="Extra pip args for install."
+    )
 
     args, unknown = parser.parse_known_args()
 
@@ -118,7 +148,7 @@ def main(argv=sys.argv[1:]):
                 print("Error, clearing virtualenv and retrying: {}".format(e), file=sys.stderr)
                 try:
                     shutil.rmtree(root_dir)
-                except:
+                except OSError:
                     pass
                 continue
             else:
@@ -128,6 +158,7 @@ def main(argv=sys.argv[1:]):
 
     return 0
 #
+
 
 if __name__ == "__main__":
     main()

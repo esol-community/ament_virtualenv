@@ -1,22 +1,25 @@
 #!/usr/bin/env python
-# Software License Agreement (GPL)
+#
+# Copyright 2019 eSol Co.,Ltd.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 #
 # \file      combine_requirements
 # \authors   Max Krichenbauer <v-krichenbauer7715@esol.co.jp>
 # \copyright Copyright (c) (2019), eSol, All rights reserved.
 #
-# This program is free software: you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation, either version 2 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import print_function
 
 import argparse
@@ -71,14 +74,21 @@ def combine_requirements(requirements_list, output_file):
     for entry in combined_requirements.values():
         output_file.write("{} # from {}\n".format(entry.requirement, entry.source))
         for suppressed in entry.suppressed_set:
-            output_file.write("# suppressed {} from {}\n".format(suppressed.requirement, suppressed.source))
+            output_file.write(
+                "# suppressed {} from {}\n".format(suppressed.requirement, suppressed.source)
+            )
 
     return 0
 
 
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--requirements-list', type=argparse.FileType('r'), nargs='*', required=True)
+    parser.add_argument(
+        '--requirements-list',
+        type=argparse.FileType('r'),
+        nargs='*',
+        required=True
+    )
     parser.add_argument('--output-file', type=argparse.FileType('w'), required=True)
     args, unknown = parser.parse_known_args()
 

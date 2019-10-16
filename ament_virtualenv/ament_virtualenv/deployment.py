@@ -1,28 +1,28 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2013 - 2014 Spotify AB
-
-# This file is part of dh-virtualenv.
-
-# dh-virtualenv is free software: you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation, either version 2 of the
-# License, or (at your option) any later version.
-
-# dh-virtualenv is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
-
+#
+# Copyright 2019 eSol Co.,Ltd.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
 # You should have received a copy of the GNU General Public License
-# along with dh-virtualenv. If not, see
-# <http://www.gnu.org/licenses/>.
-
-# Note for catkin_virtualenv users: local changes from upstream are marked with (pbovbel)
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# \file      requirements.py
+# \authors   Max Krichenbauer <v-krichenbauer7715@esol.co.jp>
+# \copyright Copyright (c) (2019), eSol, All rights reserved.
+#
 from __future__ import print_function
 
 
 import os
-import sys
 import re
 import shutil
 import subprocess
@@ -159,8 +159,7 @@ class Deployment(object):
     def create_virtualenv(self):
         if self.builtin_venv:
             virtualenv = [self.python, '-m', 'venv']
-            # max-krichenbauer: WTF?
-            #virtualenv.append(self.virtualenv_install_dir)
+            # virtualenv.append(self.virtualenv_install_dir)
             virtualenv.append(self.package_dir)
 
             if self.use_system_packages:
@@ -227,7 +226,7 @@ class Deployment(object):
             check_call([python, 'setup.py', 'test'], cwd=self.sourcedirectory)
 
     def find_script_files(self):
-        """Find list of files containing python shebangs in the bin directory"""
+        """Find list of files containing python shebangs in the bin directory."""
         command = ['grep', '-l', '-r',
                    '-e', r'^#!.*bin/\(env \)\?{0}'.format(_PYTHON_INTERPRETERS_REGEX),
                    '-e', r"^'''exec.*bin/{0}".format(_PYTHON_INTERPRETERS_REGEX),
@@ -237,7 +236,10 @@ class Deployment(object):
         return set(f for f in files.decode('utf-8').strip().split('\n') if f)
 
     def fix_shebangs(self):
-        """Translate /usr/bin/python and /usr/bin/env python shebang
+        """
+        Translate /usr/bin/python and /usr/bin/env python shebang.
+
+        Translate /usr/bin/python and /usr/bin/env python shebang
         lines to point to our virtualenv python.
         """
         pythonpath = os.path.join(self.virtualenv_install_dir, 'bin/python')
@@ -249,7 +251,10 @@ class Deployment(object):
             check_call(['sed', '-i', regex, f])
 
     def fix_activate_path(self):
-        """Replace the `VIRTUAL_ENV` path in bin/activate to reflect the
+        """
+        Replace the `VIRTUAL_ENV` path in bin/activate.
+
+        Replace the `VIRTUAL_ENV` path in bin/activate to reflect the
         post-install path of the virtualenv.
         """
         activate_settings = [
