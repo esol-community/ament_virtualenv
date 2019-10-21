@@ -19,8 +19,6 @@ class TestVirtualenv(unittest.TestCase):
     #
 #
 
-# find in 
-# /home/osboxes/ros/install/ament_virtualenv/lib/python3.6/site-packages/ament_virtualenv/
 def find_program(name='build_venv.py', package='ament_virtualenv'):
     '''
     '''
@@ -98,7 +96,6 @@ class BuildCommand(distutils.command.build.build):
         test.run()
         # Now perform the normal setup operation
         super().run()
-        
     # ^ def run()
 # ^ class BuildPyCommand()
 
