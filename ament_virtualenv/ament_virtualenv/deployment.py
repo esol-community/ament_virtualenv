@@ -126,6 +126,7 @@ class Deployment(object):
         self.pip_upgrade_args = self.pip_args[:]
 
         # Add in any user supplied pip args
+        extra_pip_arg = [e for e in extra_pip_arg if e != ''] # remove empty strings
         self.pip_args.extend(extra_pip_arg)
 
         # (pbovbel) Set pip_upgrade_args here to keep flags like -q, disregard L111 above.
@@ -210,7 +211,6 @@ class Deployment(object):
             # (pbovbel) allow pinning the pip version
             pip_package = 'pip==' + self.pip_version if self.pip_version else 'pip'
             # First, bootstrap pip with a reduced option set (well-supported options)
-            print(self.pip_preinstall_prefix + self.pip_upgrade_args + ['-U', pip_package])
             check_call(self.pip_preinstall_prefix + self.pip_upgrade_args + ['-U', pip_package])
         if self.preinstall:
             check_call(self.pip_preinstall(*self.preinstall))

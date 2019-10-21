@@ -18,8 +18,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import importlib
+
 def main(args=None):
-	print(" ")
+	requests = importlib.import_module("requests")
+	print(requests.__version__)
 
 if __name__ == '__main__':
     main()

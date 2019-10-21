@@ -29,11 +29,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <license>GPL</license>
   <author email="v-krichenbauer7715@esol.co.jp">Max Krichenbauer</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
   <build_depend>ament_virtualenv</build_depend>
-
-  <exec_depend>rclpy</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
 
   <export>
     <pip_requirements>requirements.txt</pip_requirements>
