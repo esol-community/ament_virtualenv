@@ -37,14 +37,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <build_export_depend>python3-venv</build_export_depend>
   <build_export_depend>rosbash</build_export_depend>
   <build_export_depend>virtualenv</build_export_depend>
-  -->
+  
   <exec_depend>python-enum34</exec_depend>
   <exec_depend>python-packaging</exec_depend>
   <exec_depend>python-virtualenv</exec_depend>
   <exec_depend>python3-dev</exec_depend>
   <exec_depend>python3-venv</exec_depend>
-  <!-- <exec_depend>rosbash</exec_depend> -->
+  <exec_depend>rosbash</exec_depend>
   <exec_depend>virtualenv</exec_depend>
+  -->
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

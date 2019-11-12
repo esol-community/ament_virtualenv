@@ -34,12 +34,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
   <buildtool_depend>ament_virtualenv</buildtool_depend>
 
+  <!--
   <build_export_depend>python-enum34</build_export_depend>
   <build_export_depend>python-packaging</build_export_depend>
   <build_export_depend>python-virtualenv</build_export_depend>
   <build_export_depend>python3-dev</build_export_depend>
   <build_export_depend>python3-venv</build_export_depend>
   <build_export_depend>virtualenv</build_export_depend>
+  -->
 
   <test_depend>ament_cmake_copyright</test_depend>
   <test_depend>ament_cmake_lint_cmake</test_depend>
