@@ -80,8 +80,8 @@ class Deployment(object):
             self.virtualenv_install_dir = os.path.join(install_root, install_suffix)
             self.package_dir = os.path.join(self.debian_root, install_suffix)
 
-        self.bin_dir = os.path.join(self.package_dir, 'bin')
-        self.local_bin_dir = os.path.join(self.package_dir, 'local', 'bin')
+        self.bin_dir = os.path.join(self.virtualenv_install_dir, 'bin')
+        self.local_bin_dir = os.path.join(self.virtualenv_install_dir, 'local', 'bin')
 
         self.preinstall = preinstall
         self.upgrade_pip = upgrade_pip
@@ -160,8 +160,8 @@ class Deployment(object):
     def create_virtualenv(self):
         if self.builtin_venv:
             virtualenv = [self.python, '-m', 'venv']
-            # virtualenv.append(self.virtualenv_install_dir)
-            virtualenv.append(self.package_dir)
+            virtualenv.append(self.virtualenv_install_dir)
+            # virtualenv.append(self.package_dir)
 
             if self.use_system_packages:
                 virtualenv.append('--system-site-packages')
@@ -189,7 +189,7 @@ class Deployment(object):
 
         # in at which place does the venv parameter has to be placed?
         if not self.builtin_venv:
-            virtualenv.append(self.package_dir)
+            virtualenv.append(self.virtualenv_install_dir)
         #
         check_call(virtualenv)
 

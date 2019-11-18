@@ -1,13 +1,18 @@
 from setuptools import setup
 import distutils.command.build
+#import distutils.command.install
 # alternative: import distutils.command.build_py
 # alternative: import setuptools.command.build_py
+import setuptools.command.install
+import setuptools.command.build_py
 import os
+import stat
 import sys
 import subprocess
 import shutil
 import importlib
 import unittest
+import psutil
 
 package_name = 'test_ament_virtualenv'
 
@@ -37,8 +42,16 @@ def find_program(name='build_venv.py', package='ament_virtualenv'):
 #
 
 
-class BuildCommand(distutils.command.build.build):
+class InstallCommand(setuptools.command.install.install):
     def run(self):
+        super().run()
+        bin_dir = os.path.join(self.install_base, 'bin')
+        # alternative:
+        # bin_dir = os.path.join(self.config_vars['platbase'], 'bin')
+        # bin_dir = os.path.join(self.config_vars['base'], 'bin')
+
+        # 
+        # Build the virtual environment
         python = shutil.which("python")
         if not python:
             print("ERROR: Failed to locate python", file=sys.stderr)
@@ -78,7 +91,7 @@ class BuildCommand(distutils.command.build.build):
         if not build_venv:
             print("ERROR: Failed to locate build_venv", file=sys.stderr)
             return
-        venv_install_dir = '/tmp/test_ament_virtualenv-venv'
+        venv_install_dir = os.path.join(self.install_base, 'venv')
         cmd = [
             python,
             build_venv,
@@ -89,21 +102,39 @@ class BuildCommand(distutils.command.build.build):
             # '--use-system-packages',
             '--extra-pip-args', '\"-qq\"',
         ]
-        subprocess.check_output(cmd)
-        # Check if we're actually in the virtualenv
-        # and requirements have been met
-        test = TestVirtualenv()
-        test.run()
-        # Now perform the normal setup operation
-        super().run()
-    # ^ def run()
-# ^ class BuildPyCommand()
+        ret = subprocess.check_output(cmd)
+        # 
+        # Wrapper shell executables we installed
+        for bin_file in os.listdir(bin_dir):
+            if bin_file[-5:] == '-venv':
+                continue # possible left-over from last installation
+            # rename file from 'xxx' to 'xxx-venv'
+            bin_path = os.path.join(bin_dir, bin_file)
+            if not os.path.isfile(bin_path):
+                continue
+            os.rename(bin_path, bin_path+'-venv')
+            # create new file with the name of the previous file
+            with open(bin_path, "w") as f:
+                f.write("#!/usr/bin/python3\n")
+                f.write("import os\n")
+                f.write("import sys\n")
+                f.write("import subprocess\n")
+                f.write("if __name__ == '__main__':\n")
+                f.write("    dir_path = os.path.dirname(os.path.realpath(__file__))\n")
+                f.write("    bin_path = os.path.join(dir_path, '" + bin_file + "-venv')\n")
+                f.write("    cmd = '" + venv_install_dir + "/bin/python ' + bin_path\n")
+                f.write("    sys.exit(subprocess.call(cmd, shell=True))\n")
+            # change file permissions to executable
+            st = os.stat(bin_path)
+            os.chmod(bin_path, st.st_mode | stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        return
+
 
 
 
 setup(
     cmdclass={
-        'build': BuildCommand,
+        'install': InstallCommand
     },
     name=package_name,
     version='0.0.1',
@@ -126,6 +157,7 @@ setup(
     ],
     description='Example of using ament_virtualenv.',
     license='Apache License, Version 2.0',
+    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'test_ament_virtualenv = test_ament_virtualenv.test_ament_virtualenv:main',
