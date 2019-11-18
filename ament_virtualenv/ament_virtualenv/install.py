@@ -49,7 +49,7 @@ def find_program(name='build_venv.py', package='ament_virtualenv'):
 #
 
 
-def install_venv(install_base, package_name):
+def install_venv(install_base, package_name, python_version='2'):
     venv_install_dir = os.path.join(install_base, 'venv')
     bin_dir = os.path.join(install_base, 'bin')
 	# 
@@ -99,7 +99,7 @@ def install_venv(install_base, package_name):
         '--root-dir', venv_install_dir,
         '--requirements', generated_requirements,
         '--retries', '3',
-        '--python-version', '2',
+        '--python-version', python_version,
         # '--use-system-packages',
         '--extra-pip-args', '\"-qq\"',
     ]
