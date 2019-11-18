@@ -33,6 +33,7 @@ setup(
             'build_venv = ament_virtualenv.build_venv:main',
             'combine_requirements = ament_virtualenv.combine_requirements:main',
             'glob_requirements = ament_virtualenv.glob_requirements:main',
+            'install = ament_virtualenv.install:main'
         ],
     },
 )
