@@ -81,6 +81,7 @@ def main(argv=sys.argv[1:]):
     )
     parser.add_argument(
         '--python-version',
+        required=True,
         help="Build the virtualenv with which python major version."
     )
     parser.add_argument(
@@ -100,22 +101,28 @@ def main(argv=sys.argv[1:]):
         type=str,
         help="Extra pip args for install."
     )
-
     args, unknown = parser.parse_known_args()
+    return build_venv(
+        root_dir=args.root_dir,
+        python_version=args.python_version,
+        requirements_filename=args.requirements,
+        use_system_packages=args.use_system_packages,
+        extra_pip_args=args.extra_pip_args[1:-1],
+        retries=args.retries
+    )
 
-    root_dir = os.path.realpath(args.root_dir)
-
+def build_venv(root_dir, python_version, requirements_filename, use_system_packages=False, extra_pip_args="", retries=0):
+    root_dir = os.path.realpath(root_dir)
+    python_executable = find_python(python_version)
     os.environ['DH_VIRTUALENV_INSTALL_ROOT'] = os.path.dirname(root_dir)
-
-    python_executable = find_python(args.python_version)
 
     deploy = Deployment(
         package=os.path.basename(root_dir),
-        requirements_filename=args.requirements,
+        requirements_filename=requirements_filename,
         upgrade_pip=True,
-        use_system_packages=args.use_system_packages,
+        use_system_packages=use_system_packages,
         python=python_executable,
-        extra_pip_arg=args.extra_pip_args[1:-1].split(' '),
+        extra_pip_arg=extra_pip_args.split(' '),
         log_file=None,
         builtin_venv=check_module(python_executable, 'venv'),
         builtin_pip=check_module(python_executable, 'pip'),
@@ -127,7 +134,7 @@ def main(argv=sys.argv[1:]):
             print('Generating virtualenv in {}'.format(deploy.package_dir))
             deploy.create_virtualenv()
 
-            print('Installing requirements')
+            print('Installing requirements from {}'.format(deploy.requirements_filename))
             deploy.install_dependencies()
 
             print('Fixing virtualenv root to {}'.format(deploy.virtualenv_install_dir))
@@ -143,8 +150,8 @@ def main(argv=sys.argv[1:]):
                 # Remove local folder
                 shutil.rmtree(local_dir)
         except Exception as e:
-            args.retries -= 1
-            if args.retries >= 0:
+            retries -= 1
+            if retries >= 0:
                 print("Error, clearing virtualenv and retrying: {}".format(e), file=sys.stderr)
                 try:
                     shutil.rmtree(root_dir)
@@ -153,7 +160,6 @@ def main(argv=sys.argv[1:]):
                 continue
             else:
                 raise
-
         break
 
     return 0
@@ -161,4 +167,4 @@ def main(argv=sys.argv[1:]):
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

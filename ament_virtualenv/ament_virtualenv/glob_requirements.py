@@ -34,14 +34,13 @@ from queue import Queue
 
 
 def find_in_workspaces(project, file):
-    paths = os.environ.get('AMENT_PREFIX_PATH')
+    paths = os.environ.get('COLCON_PREFIX_PATH')
     if not paths:
         return None
     paths = paths.split(os.pathsep)
     workspaces = []
     for path in paths:
-        if '/install/' in path:
-            workspaces.append(path)
+        workspaces.append(os.path.join(path, project))
     # should be at share/ament_virtualenv/
     search_dirs = ['etc', 'include', 'libexec', 'share']
     if 'libexec' in search_dirs:
@@ -126,8 +125,7 @@ def glob_requirements(package_name, no_deps):
                 for dependency in dependencies:
                     package_queue.put(dependency.name)
 
-    print(';'.join(requirements_list))
-    return 0
+    return ';'.join(requirements_list)
 
 
 def main(argv=sys.argv[1:]):
@@ -135,9 +133,10 @@ def main(argv=sys.argv[1:]):
     parser.add_argument('--package-name', type=str, required=True)
     parser.add_argument('--no-deps', action="store_true")
     args, unknown = parser.parse_known_args()
-    return glob_requirements(**vars(args))
+    print(glob_requirements(**vars(args)))
+    return 0
 #
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
