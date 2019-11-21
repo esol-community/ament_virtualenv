@@ -22,30 +22,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <package format="2">
   <name>ament_virtualenv</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <description>Bundle python requirements in a ament package via virtualenv.</description>
 
   <maintainer email="v-krichenbauer7715@esol.co.jp">Max Krichenbauer</maintainer>
   <license>GPL</license>
   <author email="v-krichenbauer7715@esol.co.jp">Max Krichenbauer</author>
-
-  <!--
-  <build_export_depend>python-enum34</build_export_depend>
-  <build_export_depend>python-packaging</build_export_depend>
-  <build_export_depend>python-virtualenv</build_export_depend>
-  <build_export_depend>python3-dev</build_export_depend>
-  <build_export_depend>python3-venv</build_export_depend>
-  <build_export_depend>rosbash</build_export_depend>
-  <build_export_depend>virtualenv</build_export_depend>
-  
-  <exec_depend>python-enum34</exec_depend>
-  <exec_depend>python-packaging</exec_depend>
-  <exec_depend>python-virtualenv</exec_depend>
-  <exec_depend>python3-dev</exec_depend>
-  <exec_depend>python3-venv</exec_depend>
-  <exec_depend>rosbash</exec_depend>
-  <exec_depend>virtualenv</exec_depend>
-  -->
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

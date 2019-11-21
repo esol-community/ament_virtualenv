@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <package format="2">
   <name>ament_cmake_virtualenv</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <description>Bundle python requirements in a ament package via virtualenv.</description>
 
   <maintainer email="v-krichenbauer7715@esol.co.jp">Max Krichenbauer</maintainer>
@@ -31,17 +31,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
   <buildtool_depend>ament_cmake_core</buildtool_depend>
   <buildtool_depend>ament_cmake_test</buildtool_depend>
-
+  
   <buildtool_depend>ament_virtualenv</buildtool_depend>
-
-  <!--
-  <build_export_depend>python-enum34</build_export_depend>
-  <build_export_depend>python-packaging</build_export_depend>
-  <build_export_depend>python-virtualenv</build_export_depend>
-  <build_export_depend>python3-dev</build_export_depend>
-  <build_export_depend>python3-venv</build_export_depend>
-  <build_export_depend>virtualenv</build_export_depend>
-  -->
 
   <test_depend>ament_cmake_copyright</test_depend>
   <test_depend>ament_cmake_lint_cmake</test_depend>
