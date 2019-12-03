@@ -145,7 +145,6 @@ def install_venv(install_base, package_name, python_version='2'):
             extra_pip_args="-qq",
             retries=3
         )
-        print('XXXXXXXX build_venv returned ' + str(ret))
     # 
     # Wrapper shell executables we installed
     for bin_file in os.listdir(bin_dir):

@@ -128,4 +128,23 @@ function(ament_generate_virtualenv)
     DESTINATION share/${PROJECT_NAME}
   )
 
+
+  # Override the ament_python_install_module macro to wrap modules
+  find_program(wrap_module_BIN NAMES "wrap_module")
+  if(NOT wrap_module_BIN)
+    message(FATAL_ERROR "could not find program 'wrap_module'")
+  endif()
+  macro(ament_python_install_module)
+    _ament_cmake_python_register_environment_hook()
+    _ament_cmake_python_install_module(${ARGN})
+    get_filename_component(module_path ${ARGN} NAME)
+    set(module_path "${CMAKE_INSTALL_PREFIX}/${PYTHON_INSTALL_DIR}/${module_path}")
+    # message(WARNING "[ament_cmake_virtualenv]: ament_python_install_module override for ${module_path} to ${${PROJECT_NAME}_VENV_INSTALL_DIR}")
+    execute_process(
+      COMMAND ${wrap_module_BIN}
+        --module-path ${module_path}
+        --venv-install-dir ${${PROJECT_NAME}_VENV_INSTALL_DIR}
+    )
+  endmacro()
+
 endfunction()
