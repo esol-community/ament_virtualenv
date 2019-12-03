@@ -106,7 +106,7 @@ function(ament_generate_virtualenv)
   if(NOT build_venv_BIN)
     message(FATAL_ERROR "could not find program 'build_venv'")
   endif()
-  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${venv_dir}
+  add_custom_command(OUTPUT ${venv_install_dir}
     COMMAND ${build_venv_BIN}
       --root-dir ${venv_install_dir} --requirements ${generated_requirements} --retries 3
       --python-version ${ARG_PYTHON_VERSION} ${venv_args} --extra-pip-args ${processed_pip_args}
@@ -115,12 +115,11 @@ function(ament_generate_virtualenv)
 
   # Per-package virtualenv target
   add_custom_target(${PROJECT_NAME}_generate_virtualenv ALL
-    DEPENDS ${CMAKE_BINARY_DIR}/${venv_dir}
-    # DEPENDS ${venv_install_dir}
+    DEPENDS ${venv_install_dir}
     SOURCES ${requirements_list}
   )
 
-  install(DIRECTORY ${CMAKE_BINARY_DIR}/${venv_dir}
+  install(DIRECTORY ${venv_install_dir}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}
     USE_SOURCE_PERMISSIONS
   )
