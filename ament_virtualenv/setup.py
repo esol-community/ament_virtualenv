@@ -34,7 +34,8 @@ setup(
             'combine_requirements = ament_virtualenv.combine_requirements:main',
             'glob_requirements = ament_virtualenv.glob_requirements:main',
             'install = ament_virtualenv.install:main',
-            'wrap_module = ament_virtualenv.wrap_module:main'
+            'wrap_module = ament_virtualenv.wrap_module:main',
+            'wrap_package = ament_virtualenv.wrap_package:main',
         ],
     },
 )
