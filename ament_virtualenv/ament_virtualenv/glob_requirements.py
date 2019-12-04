@@ -30,31 +30,36 @@ from ament_virtualenv.package import parse_package
 # from Queue import Queue
 from queue import Queue
 
-# from catkin.find_in_workspaces import find_in_workspaces
-
 
 def find_in_workspaces(project, file):
+    '''
+    COLCON_PREFIX_PATH points to the `install/` directory,
+    which is fine when ament_python is used as build tool
+    (ament_python copies the files right away),
+    but ament_cmake does not copy the files until after the
+    build, which is too late. So for ament_cmake we also
+    need to add the neighboring `src/` folder to the seach
+    (eg.: `install/../src/`) 
+    '''
     paths = os.environ.get('COLCON_PREFIX_PATH')
     if not paths:
         return None
     paths = paths.split(os.pathsep)
     workspaces = []
     for path in paths:
-        workspaces.append(os.path.join(path, project))
-    # should be at share/ament_virtualenv/
-    search_dirs = ['etc', 'include', 'libexec', 'share']
-    if 'libexec' in search_dirs:
-        search_dirs.insert(search_dirs.index('libexec'), 'lib')
+        workspaces.append(os.path.join(path))
+        workspaces.append(os.path.join(path, '..' , 'src'))
     for workspace in (workspaces or []):
-        for sub in search_dirs:
-            p = os.path.join(workspace, sub)
-            p = os.path.join(p, file)
-            if os.path.exists(p):
-                return p
-            if sub == 'share':
-                p = os.path.join(workspace, sub, project, file)
-                if os.path.exists(p):
-                    return p
+        for d, dirs, files in os.walk(workspace, topdown=True, followlinks=True):
+            if ('CATKIN_IGNORE' in files or
+                'COLCON_IGNORE' in files or
+                'AMENT_IGNORE' in files
+            ):
+                del dirs[:]
+                continue
+            dirname = os.path.basename(d)
+            if dirname == project and file in files:
+                return os.path.join(workspace, d, file)
     # none found:
     return None
 #
@@ -74,7 +79,8 @@ def parse_exported_requirements(package):
             )
             if not requirements_path:
                 print(
-                    ("Package {package} declares <{tagname}> {file}, "
+                    ("[ERROR] ament_virtualenv "
+                     "Package {package} declares <{tagname}> {file}, "
                      "which cannot be found in the package").format(
                         package=package.name,
                         tagname=AMENT_VIRTUALENV_TAGNAME,
@@ -95,7 +101,7 @@ def process_package(package_name, soft_fail=True):
     )
     if not package_path:
         if not soft_fail:
-            raise RuntimeError("Unable to process package {}".format(package_name))
+            raise RuntimeError("Failed to find package.xml for package {}".format(package_name))
         else:
             # This is not an ament dependency
             return [], []
