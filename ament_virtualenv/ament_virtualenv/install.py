@@ -26,7 +26,6 @@ import stat
 import sys
 import subprocess
 import shutil
-import psutil
 import argparse
 
 try:

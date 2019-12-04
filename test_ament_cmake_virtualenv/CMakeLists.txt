@@ -15,10 +15,10 @@ find_package(example_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 
 find_package(ament_cmake_virtualenv REQUIRED)
-ament_generate_virtualenv()
+ament_generate_virtualenv(PYTHON_VERSION 2)
 
-ament_python_install_module(test_ament_cmake_virtualenv/test_ament_cmake_virtualenv.py)
-# ament_python_install_package(test_ament_cmake_virtualenv)
+ament_python_install_module(test_ament_cmake_virtualenv/test_ament_cmake_virtualenv-as_module.py)
+ament_python_install_package(test_ament_cmake_virtualenv/as_package)
 
 install(FILES requirements.txt
   DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
