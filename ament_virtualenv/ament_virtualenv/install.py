@@ -167,6 +167,8 @@ def install_venv(install_base, package_name, python_version='2'):
             f.write("    vpy_path = os.path.abspath(os.path.join(dir_path, '" + venv_rel_path +"'))\n")
             f.write("    vpy_path = os.path.join(vpy_path, 'bin', 'python')\n")
             f.write("    cmd = vpy_path + ' ' + bin_path\n")
+            f.write("    if len(sys.argv) > 1:\n")
+            f.write("        cmd += ' ' + ' '.join(sys.argv[1:])\n")
             f.write("    sys.exit(subprocess.call(cmd, shell=True))\n")
         # change file permissions to executable
         st = os.stat(bin_path)
