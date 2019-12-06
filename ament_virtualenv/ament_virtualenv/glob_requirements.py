@@ -25,10 +25,12 @@ from __future__ import print_function
 import argparse
 import sys
 import os
-# from catkin_pkg.package import parse_package
 from ament_virtualenv.package import parse_package
-# from Queue import Queue
-from queue import Queue
+
+try:
+    from queue import Queue
+except:
+    from Queue import Queue
 
 
 def find_in_workspaces(project, file):
@@ -130,7 +132,6 @@ def glob_requirements(package_name, no_deps):
             if not no_deps:
                 for dependency in dependencies:
                     package_queue.put(dependency.name)
-
     return ';'.join(requirements_list)
 
 
