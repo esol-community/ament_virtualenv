@@ -65,7 +65,8 @@ function(ament_generate_virtualenv)
   endif()
 
   # Collect all exported pip requirements files, from this package and all dependencies
-  find_program(glob_requirements_BIN NAMES "glob_requirements")
+  find_program(glob_requirements_BIN NAMES "glob_requirements"
+               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
   if(NOT glob_requirements_BIN)
     message(FATAL_ERROR "could not find program 'glob_requirements'")
   endif()
@@ -86,7 +87,8 @@ function(ament_generate_virtualenv)
   endforeach()
 
   # Combine requirements into one list
-  find_program(combine_requirements_BIN NAMES "combine_requirements")
+  find_program(combine_requirements_BIN NAMES "combine_requirements"
+               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
   if(NOT combine_requirements_BIN)
     message(FATAL_ERROR "could not find program 'combine_requirements'")
   endif()
@@ -102,7 +104,8 @@ function(ament_generate_virtualenv)
   endif()
 
   # Generate a virtualenv, fixing up paths for install-space
-  find_program(build_venv_BIN NAMES "build_venv")
+  find_program(build_venv_BIN NAMES "build_venv"
+               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
   if(NOT build_venv_BIN)
     message(FATAL_ERROR "could not find program 'build_venv'")
   endif()
@@ -129,31 +132,32 @@ function(ament_generate_virtualenv)
   )
 
 
+  # Override the ament_python_install_module macro to wrap modules
+  find_program(wrap_module_BIN NAMES "wrap_module"
+               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
+  if(NOT wrap_module_BIN)
+    message(FATAL_ERROR "could not find program 'wrap_module'")
+  endif()
+  macro(ament_python_install_module)
+    _ament_cmake_python_register_environment_hook()
+    _ament_cmake_python_install_module(${ARGN})
+    get_filename_component(module_path ${ARGN} NAME)
+    set(module_path "${CMAKE_INSTALL_PREFIX}/${PYTHON_INSTALL_DIR}/${module_path}")
+    # message(WARNING "[ament_cmake_virtualenv]: ament_python_install_module override for ${module_path} to ${${PROJECT_NAME}_VENV_INSTALL_DIR}")
+    install(CODE "execute_process(COMMAND ${wrap_module_BIN} --module-path ${module_path} --venv-install-dir ${${PROJECT_NAME}_VENV_INSTALL_DIR})")
+  endmacro()
+
+  # Override the ament_python_install_package macro to wrap packages
+  find_program(wrap_package_BIN NAMES "wrap_package"
+               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
+  if(NOT wrap_package_BIN)
+    message(FATAL_ERROR "could not find program 'wrap_package'")
+  endif()
+  macro(ament_python_install_package)
+    _ament_cmake_python_register_environment_hook()
+    _ament_cmake_python_install_package(${ARGN})
+    set(package_dir "${CMAKE_INSTALL_PREFIX}/${PYTHON_INSTALL_DIR}/${ARGN}")
+    # message(WARNING "[ament_cmake_virtualenv]: ament_python_install_package override for ${package_dir} to ${${PROJECT_NAME}_VENV_INSTALL_DIR}")
+    install(CODE "execute_process(COMMAND ${wrap_package_BIN} --package-dir ${package_dir} --venv-install-dir ${${PROJECT_NAME}_VENV_INSTALL_DIR})")
+  endmacro()
 endfunction()
-
-# Override the ament_python_install_module macro to wrap modules
-find_program(wrap_module_BIN NAMES "wrap_module")
-if(NOT wrap_module_BIN)
-  message(FATAL_ERROR "could not find program 'wrap_module'")
-endif()
-macro(ament_python_install_module)
-  _ament_cmake_python_register_environment_hook()
-  _ament_cmake_python_install_module(${ARGN})
-  get_filename_component(module_path ${ARGN} NAME)
-  set(module_path "${CMAKE_INSTALL_PREFIX}/${PYTHON_INSTALL_DIR}/${module_path}")
-  # message(WARNING "[ament_cmake_virtualenv]: ament_python_install_module override for ${module_path} to ${${PROJECT_NAME}_VENV_INSTALL_DIR}")
-  install(CODE "execute_process(COMMAND ${wrap_module_BIN} --module-path ${module_path} --venv-install-dir ${${PROJECT_NAME}_VENV_INSTALL_DIR})")
-endmacro()
-
-# Override the ament_python_install_package macro to wrap packages
-find_program(wrap_package_BIN NAMES "wrap_package")
-if(NOT wrap_package_BIN)
-  message(FATAL_ERROR "could not find program 'wrap_package'")
-endif()
-macro(ament_python_install_package)
-  _ament_cmake_python_register_environment_hook()
-  _ament_cmake_python_install_package(${ARGN})
-  set(package_dir "${CMAKE_INSTALL_PREFIX}/${PYTHON_INSTALL_DIR}/${ARGN}")
-  # message(WARNING "[ament_cmake_virtualenv]: ament_python_install_package override for ${package_dir} to ${${PROJECT_NAME}_VENV_INSTALL_DIR}")
-  install(CODE "execute_process(COMMAND ${wrap_package_BIN} --package-dir ${package_dir} --venv-install-dir ${${PROJECT_NAME}_VENV_INSTALL_DIR})")
-endmacro()

@@ -25,7 +25,14 @@ from __future__ import print_function
 import argparse
 import sys
 import os
-from ament_virtualenv.package import parse_package
+
+try:
+    from ament_virtualenv.package import parse_package
+except:
+    try:
+        from package import parse_package
+    except:
+        from .package import parse_package
 
 try:
     from queue import Queue
@@ -43,14 +50,17 @@ def find_in_workspaces(project, file):
     need to add the neighboring `src/` folder to the seach
     (eg.: `install/../src/`) 
     '''
-    paths = os.environ.get('COLCON_PREFIX_PATH')
-    if not paths:
-        return None
-    paths = paths.split(os.pathsep)
     workspaces = []
-    for path in paths:
-        workspaces.append(os.path.join(path))
-        workspaces.append(os.path.join(path, '..' , 'src'))
+    colcon_paths = os.environ.get('COLCON_PREFIX_PATH')
+    if not colcon_paths:
+        # can happen when install/setup.bash has not been sourced yet
+        # fall back to using the working directory
+        workspaces = [os.getcwd()]
+    else:
+        colcon_paths = colcon_paths.split(os.pathsep)
+        for path in colcon_paths:
+            workspaces.append(os.path.join(path))
+            workspaces.append(os.path.join(path, '..' , 'src'))
     for workspace in (workspaces or []):
         for d, dirs, files in os.walk(workspace, topdown=True, followlinks=True):
             if ('CATKIN_IGNORE' in files or
