@@ -32,7 +32,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <buildtool_depend>ament_cmake_core</buildtool_depend>
   <buildtool_depend>ament_cmake_test</buildtool_depend>
   
-  <buildtool_depend>ament_virtualenv</buildtool_depend>
+  <build_depend>ament_virtualenv</build_depend>
+  <exec_depend>ament_virtualenv</exec_depend>
 
   <test_depend>ament_cmake_copyright</test_depend>
   <test_depend>ament_cmake_lint_cmake</test_depend>

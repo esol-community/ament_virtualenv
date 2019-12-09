@@ -22,7 +22,7 @@ setup(
     data_files=[
         ('share/'+package_name, ['package.xml', 'requirements.txt']),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools','ament_virtualenv'],
     zip_safe=False,
     author='Max Krichenbauer',
     author_email='v-krichenbauer7715@esol.co.jp',

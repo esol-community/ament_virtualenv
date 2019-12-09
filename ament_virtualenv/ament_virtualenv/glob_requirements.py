@@ -61,6 +61,7 @@ def find_in_workspaces(project, file):
         for path in colcon_paths:
             workspaces.append(os.path.join(path))
             workspaces.append(os.path.join(path, '..' , 'src'))
+
     for workspace in (workspaces or []):
         for d, dirs, files in os.walk(workspace, topdown=True, followlinks=True):
             if ('CATKIN_IGNORE' in files or
