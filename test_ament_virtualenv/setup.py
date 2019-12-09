@@ -17,7 +17,7 @@ setup(
         'install': InstallCommand
     },
     name=package_name,
-    version='0.0.3',
+    version='0.0.4',
     packages=[package_name],
     data_files=[
         ('share/'+package_name, ['package.xml', 'requirements.txt']),
