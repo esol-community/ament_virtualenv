@@ -54,12 +54,22 @@ def find_in_workspaces(project, file):
     colcon_paths = os.environ.get('COLCON_PREFIX_PATH')
     if not colcon_paths:
         # can happen when install/setup.bash has not been sourced yet
-        # fall back to using the working directory
-        workspaces = [os.getcwd()]
+        # fall back to using AMENT_PREFIX_PATH (points at install/<package>)
+        ament_paths = os.environ.get('AMENT_PREFIX_PATH')
+        if not ament_paths:
+            # final fallback: use working directory (usually src/<package>)
+            workspaces = [os.getcwd()]
+        else:
+            ament_paths = ament_paths.split(os.pathsep)
+            for path in ament_paths:
+                if (os.path.sep + 'install' + os.path.sep) in path:
+                    workspaces.append(os.path.join(path, '..'))
+                    workspaces.append(os.path.join(path, '..', '..' , 'src'))
+                    break
     else:
         colcon_paths = colcon_paths.split(os.pathsep)
         for path in colcon_paths:
-            workspaces.append(os.path.join(path))
+            workspaces.append(path)
             workspaces.append(os.path.join(path, '..' , 'src'))
 
     for workspace in (workspaces or []):
