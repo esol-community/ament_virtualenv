@@ -56,10 +56,10 @@ def find_in_workspaces(project, file, workspaces=[]):
         # CMAKE_PREFIX_PATH (should contain the same information)
         cmake_paths = os.environ.get('CMAKE_PREFIX_PATHCMAKE_PREFIX_PATH')
         if cmake_paths != None:
-            # CMAKE_PREFIX_PATH points at install/<package>
+            # CMAKE_PREFIX_PATH points at install/<package> or install_isolated/<package>
             cmake_paths = cmake_paths.split(os.pathsep)
             for path in cmake_paths:
-                if (os.path.sep + 'install' + os.path.sep) in path:
+                if (os.path.sep + 'install' + os.path.sep) in path or (os.path.sep + 'install_isolated' + os.path.sep) in path:
                     workspaces.append(os.path.join(path, '..'))
                     workspaces.append(os.path.join(path, '..', '..' , 'src'))
                     break
@@ -75,7 +75,7 @@ def find_in_workspaces(project, file, workspaces=[]):
         if colcon_paths != None:
             colcon_paths = colcon_paths.split(os.pathsep)
             for path in colcon_paths:
-                if (os.path.sep + 'install') in path:
+                if (os.path.sep + 'install') in path or (os.path.sep + 'install_isolated') in path:
                     workspaces.append(path)
                     workspaces.append(os.path.join(path, '..' , 'src'))
     if len(workspaces) == 0:
