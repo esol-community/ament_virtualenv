@@ -86,9 +86,9 @@ def find_in_workspaces(project, file, workspaces=[]):
     if len(workspaces) == 0:
         raise RuntimeError(
             "[ament_virtualenv] Failed to find any workspaces."
-            + "\nAMENT_PREFIX_PATH=" + os.environ.get('AMENT_PREFIX_PATH')
-            + "\nCMAKE_PREFIX_PATH=" + os.environ.get('CMAKE_PREFIX_PATH')
-            + "\nCOLCON_PREFIX_PATH=" + os.environ.get('COLCON_PREFIX_PATH')
+            + "\nAMENT_PREFIX_PATH=" + os.environ.get('AMENT_PREFIX_PATH', 'NOT SET')
+            + "\nCMAKE_PREFIX_PATH=" + os.environ.get('CMAKE_PREFIX_PATH', 'NOT SET')
+            + "\nCOLCON_PREFIX_PATH=" + os.environ.get('COLCON_PREFIX_PATH', 'NOT SET')
             + "\nCWD=" + os.getcwd()
         )
     # now search the workspaces
