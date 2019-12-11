@@ -52,6 +52,18 @@ def find_in_workspaces(project, file, workspaces=[]):
                 workspaces.append(os.path.join(path, '..', '..' , 'src'))
                 break
     if len(workspaces) == 0:
+        # if AMENT_PREFIX_PATH wasn't set, we can fall back on
+        # CMAKE_PREFIX_PATH (should contain the same information)
+        cmake_paths = os.environ.get('CMAKE_PREFIX_PATHCMAKE_PREFIX_PATH')
+        if cmake_paths != None:
+            # CMAKE_PREFIX_PATH points at install/<package>
+            cmake_paths = cmake_paths.split(os.pathsep)
+            for path in cmake_paths:
+                if (os.path.sep + 'install' + os.path.sep) in path:
+                    workspaces.append(os.path.join(path, '..'))
+                    workspaces.append(os.path.join(path, '..', '..' , 'src'))
+                    break
+    if len(workspaces) == 0:
         # COLCON_PREFIX_PATH points to the `install/` directory,
         # which is fine when ament_python is used as build tool
         # (ament_python copies the files right away),
@@ -71,6 +83,14 @@ def find_in_workspaces(project, file, workspaces=[]):
         path = os.getcwd()
         if (os.path.sep + 'src') in path:
             workspaces.append(path)
+    if len(workspaces) == 0:
+        raise RuntimeError(
+            "[ament_virtualenv] Failed to find any workspaces."
+            + "\nAMENT_PREFIX_PATH=" + os.environ.get('AMENT_PREFIX_PATH')
+            + "\nCMAKE_PREFIX_PATH=" + os.environ.get('CMAKE_PREFIX_PATH')
+            + "\nCOLCON_PREFIX_PATH=" + os.environ.get('COLCON_PREFIX_PATH')
+            + "\nCWD=" + os.getcwd()
+        )
     # now search the workspaces
     for workspace in (workspaces or []):
         for d, dirs, files in os.walk(workspace, topdown=True, followlinks=True):
