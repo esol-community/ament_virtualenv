@@ -41,36 +41,37 @@ except:
 
 
 def find_in_workspaces(project, file, workspaces=[]):
-    '''
-    COLCON_PREFIX_PATH points to the `install/` directory,
-    which is fine when ament_python is used as build tool
-    (ament_python copies the files right away),
-    but ament_cmake does not copy the files until after the
-    build, which is too late. So for ament_cmake we also
-    need to add the neighboring `src/` folder to the seach
-    (eg.: `install/../src/`) 
-    '''
-    colcon_paths = os.environ.get('COLCON_PREFIX_PATH')
-    if not colcon_paths:
-        # can happen when install/setup.bash has not been sourced yet
-        # fall back to using AMENT_PREFIX_PATH (points at install/<package>)
-        ament_paths = os.environ.get('AMENT_PREFIX_PATH')
-        if not ament_paths:
-            # final fallback: use working directory (usually src/<package>)
-            workspaces.append(os.getcwd())
-        else:
-            ament_paths = ament_paths.split(os.pathsep)
-            for path in ament_paths:
-                if (os.path.sep + 'install' + os.path.sep) in path:
-                    workspaces.append(os.path.join(path, '..'))
-                    workspaces.append(os.path.join(path, '..', '..' , 'src'))
-                    break
-    else:
-        colcon_paths = colcon_paths.split(os.pathsep)
-        for path in colcon_paths:
+    # Add default workspace search paths
+    ament_paths = os.environ.get('AMENT_PREFIX_PATH')
+    if ament_paths != None:
+        # AMENT_PREFIX_PATH points at install/<package>
+        ament_paths = ament_paths.split(os.pathsep)
+        for path in ament_paths:
+            if (os.path.sep + 'install' + os.path.sep) in path:
+                workspaces.append(os.path.join(path, '..'))
+                workspaces.append(os.path.join(path, '..', '..' , 'src'))
+                break
+    if len(workspaces) == 0:
+        # COLCON_PREFIX_PATH points to the `install/` directory,
+        # which is fine when ament_python is used as build tool
+        # (ament_python copies the files right away),
+        # but ament_cmake does not copy the files until after the
+        # build, which is too late. So for ament_cmake we also
+        # need to add the neighboring `src/` folder to the seach
+        # (eg.: `install/../src/`) 
+        colcon_paths = os.environ.get('COLCON_PREFIX_PATH')
+        if colcon_paths != None:
+            colcon_paths = colcon_paths.split(os.pathsep)
+            for path in colcon_paths:
+                if (os.path.sep + 'install') in path:
+                    workspaces.append(path)
+                    workspaces.append(os.path.join(path, '..' , 'src'))
+    if len(workspaces) == 0:
+        # final fallback: use working directory (usually src/<package>)
+        path = os.getcwd()
+        if (os.path.sep + 'src') in path:
             workspaces.append(path)
-            workspaces.append(os.path.join(path, '..' , 'src'))
-
+    # now search the workspaces
     for workspace in (workspaces or []):
         for d, dirs, files in os.walk(workspace, topdown=True, followlinks=True):
             if ('CATKIN_IGNORE' in files or
