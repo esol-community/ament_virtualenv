@@ -40,7 +40,7 @@ except:
     from Queue import Queue
 
 
-def find_in_workspaces(project, file):
+def find_in_workspaces(project, file, workspaces=[]):
     '''
     COLCON_PREFIX_PATH points to the `install/` directory,
     which is fine when ament_python is used as build tool
@@ -50,7 +50,6 @@ def find_in_workspaces(project, file):
     need to add the neighboring `src/` folder to the seach
     (eg.: `install/../src/`) 
     '''
-    workspaces = []
     colcon_paths = os.environ.get('COLCON_PREFIX_PATH')
     if not colcon_paths:
         # can happen when install/setup.bash has not been sourced yet
@@ -58,7 +57,7 @@ def find_in_workspaces(project, file):
         ament_paths = os.environ.get('AMENT_PREFIX_PATH')
         if not ament_paths:
             # final fallback: use working directory (usually src/<package>)
-            workspaces = [os.getcwd()]
+            workspaces.append(os.getcwd())
         else:
             ament_paths = ament_paths.split(os.pathsep)
             for path in ament_paths:
@@ -118,13 +117,16 @@ def parse_exported_requirements(package):
 
 def process_package(package_name, soft_fail=True):
     # type: (str) -> List[str], List[str]
+    workspaces = []
     package_path = find_in_workspaces(
         project=package_name,
-        file="package.xml"
+        file="package.xml",
+        workspaces=workspaces
     )
     if not package_path:
         if not soft_fail:
-            raise RuntimeError("Failed to find package.xml for package {}".format(package_name))
+            raise RuntimeError("Failed to find package.xml for package "
+                               + package_name + ' in ' + ';'.join(workspaces))
         else:
             # This is not an ament dependency
             return [], []
