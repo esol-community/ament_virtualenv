@@ -28,7 +28,14 @@ import sys
 
 from collections import namedtuple
 from packaging.requirements import Requirement, InvalidRequirement
-from ament_virtualenv.requirements import VcsRequirement
+
+try:
+    from ament_virtualenv.requirements import VcsRequirement
+except:
+    try:
+        from requirements import VcsRequirement
+    except:
+        from .requirements import VcsRequirement
 
 comment_regex = re.compile(r'\s*#\s.*$', flags=re.MULTILINE)
 

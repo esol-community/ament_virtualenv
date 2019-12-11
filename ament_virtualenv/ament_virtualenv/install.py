@@ -90,7 +90,7 @@ def install_venv(install_base, package_name, python_version='2'):
     #
     # combine_requirements --requirements-list a/requirements.txt;b/requirements.txt
     #                      --output-file x/generated_requirements.txt
-    generated_requirements = '/tmp/test_ament_virtualenv-generated_requirements.txt'
+    generated_requirements = os.path.join(install_base, package_name, 'generated_requirements.txt')
     if ament_virtualenv_import_failed:
         combine_requirements_py = find_program(name='combine_requirements.py', package='ament_virtualenv')
         if not combine_requirements_py:
