@@ -63,10 +63,12 @@ def install_venv(install_base, package_name, python_version='2'):
     bin_dir = os.path.join(install_base, 'bin')
     # 
     # Build the virtual environment
-    python = shutil.which("python")
+    python = shutil.which("python3")
     if not python:
-        print("ERROR: Failed to locate python", file=sys.stderr)
-        return 1
+        python = shutil.which("python")
+        if not python:
+            print("ERROR: Failed to locate python", file=sys.stderr)
+            return 1
 
     # glob_requirements --package-name ament_cmake_haros
     if ament_virtualenv_import_failed == True:
