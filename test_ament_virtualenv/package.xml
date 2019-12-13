@@ -32,6 +32,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <build_depend>ament_virtualenv</build_depend>
   <test_depend>ament_virtualenv</test_depend>
 
+  <build_depend>python-enum34</build_depend>
+  <build_depend>python-packaging</build_depend>
+  <build_depend>python-virtualenv</build_depend>
+  
   <export>
     <pip_requirements>requirements.txt</pip_requirements>
     <build_type>ament_python</build_type>
