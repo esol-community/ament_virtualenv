@@ -34,8 +34,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <test_depend>ament_cmake_virtualenv</test_depend>
 
   <build_depend>python-enum34</build_depend>
-  <build_depend>python-packaging</build_depend>
+  
   <build_depend>python-virtualenv</build_depend>
+
+  <build_depend>python-packaging</build_depend>
+  <buildtool_depend>python-packaging</buildtool_depend>
+  <build_export_depend>python-packaging</build_export_depend>
+  <exec_depend>python-packaging</exec_depend>
+  <test_depend>python-packaging</test_depend>
 
   <export>
     <pip_requirements>requirements.txt</pip_requirements>

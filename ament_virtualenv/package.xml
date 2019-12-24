@@ -35,11 +35,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <test_depend>python3-pytest</test_depend>
 
   <buildtool_depend>python-enum34</buildtool_depend>
-  <buildtool_depend>python-packaging</buildtool_depend>
   <buildtool_depend>python-virtualenv</buildtool_depend>
   <build_export_depend>python-enum34</build_export_depend>
-  <build_export_depend>python-packaging</build_export_depend>
   <build_export_depend>python-virtualenv</build_export_depend>
+
+  <build_depend>python-packaging</build_depend>
+  <buildtool_depend>python-packaging</buildtool_depend>
+  <build_export_depend>python-packaging</build_export_depend>
+  <exec_depend>python-packaging</exec_depend>
+  <test_depend>python-packaging</test_depend>
 
   <export>
     <build_type>ament_python</build_type>
