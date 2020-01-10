@@ -28,40 +28,42 @@ import os
 
 try:
     from ament_virtualenv.package import parse_package
-except:
+except ImportError:
     try:
         from package import parse_package
-    except:
+    except ImportError:
         from .package import parse_package
 
 try:
     from queue import Queue
-except:
+except ImportError:
     from Queue import Queue
 
 
 def find_in_workspaces(project, file, workspaces=[]):
     # Add default workspace search paths
     ament_paths = os.environ.get('AMENT_PREFIX_PATH')
-    if ament_paths != None:
+    if ament_paths is not None:
         # AMENT_PREFIX_PATH points at install/<package>
         ament_paths = ament_paths.split(os.pathsep)
         for path in ament_paths:
-            if (os.path.sep + 'install' + os.path.sep) in path or (os.path.sep + 'install_isolated' + os.path.sep) in path:
+            if ((os.path.sep + 'install' + os.path.sep) in path or
+               (os.path.sep + 'install_isolated' + os.path.sep) in path):
                 workspaces.append(os.path.join(path, '..'))
-                workspaces.append(os.path.join(path, '..', '..' , 'src'))
+                workspaces.append(os.path.join(path, '..', '..', 'src'))
                 break
     if len(workspaces) == 0:
         # if AMENT_PREFIX_PATH wasn't set, we can fall back on
         # CMAKE_PREFIX_PATH (should contain the same information)
         cmake_paths = os.environ.get('CMAKE_PREFIX_PATH')
-        if cmake_paths != None:
+        if cmake_paths is not None:
             # CMAKE_PREFIX_PATH points at install/<package> or install_isolated/<package>
             cmake_paths = cmake_paths.split(os.pathsep)
             for path in cmake_paths:
-                if (os.path.sep + 'install' + os.path.sep) in path or (os.path.sep + 'install_isolated' + os.path.sep) in path:
+                if ((os.path.sep + 'install' + os.path.sep) in path or
+                   (os.path.sep + 'install_isolated' + os.path.sep) in path):
                     workspaces.append(os.path.join(path, '..'))
-                    workspaces.append(os.path.join(path, '..', '..' , 'src'))
+                    workspaces.append(os.path.join(path, '..', '..', 'src'))
                     break
     if len(workspaces) == 0:
         # COLCON_PREFIX_PATH points to the `install/` directory,
@@ -70,14 +72,14 @@ def find_in_workspaces(project, file, workspaces=[]):
         # but ament_cmake does not copy the files until after the
         # build, which is too late. So for ament_cmake we also
         # need to add the neighboring `src/` folder to the seach
-        # (eg.: `install/../src/`) 
+        # (eg.: `install/../src/`)
         colcon_paths = os.environ.get('COLCON_PREFIX_PATH')
-        if colcon_paths != None:
+        if colcon_paths is not None:
             colcon_paths = colcon_paths.split(os.pathsep)
             for path in colcon_paths:
                 if (os.path.sep + 'install') in path or (os.path.sep + 'install_isolated') in path:
                     workspaces.append(path)
-                    workspaces.append(os.path.join(path, '..' , 'src'))
+                    workspaces.append(os.path.join(path, '..', 'src'))
     if len(workspaces) == 0:
         # final fallback: use working directory (usually src/<package>)
         path = os.getcwd()
@@ -85,19 +87,18 @@ def find_in_workspaces(project, file, workspaces=[]):
             workspaces.append(path)
     if len(workspaces) == 0:
         raise RuntimeError(
-            "[ament_virtualenv] Failed to find any workspaces."
-            + "\nAMENT_PREFIX_PATH=" + os.environ.get('AMENT_PREFIX_PATH', 'NOT SET')
-            + "\nCMAKE_PREFIX_PATH=" + os.environ.get('CMAKE_PREFIX_PATH', 'NOT SET')
-            + "\nCOLCON_PREFIX_PATH=" + os.environ.get('COLCON_PREFIX_PATH', 'NOT SET')
-            + "\nCWD=" + os.getcwd()
+            "[ament_virtualenv] Failed to find any workspaces." +
+            "\nAMENT_PREFIX_PATH=" + os.environ.get('AMENT_PREFIX_PATH', 'NOT SET') +
+            "\nCMAKE_PREFIX_PATH=" + os.environ.get('CMAKE_PREFIX_PATH', 'NOT SET') +
+            "\nCOLCON_PREFIX_PATH=" + os.environ.get('COLCON_PREFIX_PATH', 'NOT SET') +
+            "\nCWD=" + os.getcwd()
         )
     # now search the workspaces
     for workspace in (workspaces or []):
         for d, dirs, files in os.walk(workspace, topdown=True, followlinks=True):
-            if ('CATKIN_IGNORE' in files or
-                'COLCON_IGNORE' in files or
-                'AMENT_IGNORE' in files
-            ):
+            if (('CATKIN_IGNORE' in files) or
+               ('COLCON_IGNORE' in files) or
+               ('AMENT_IGNORE' in files)):
                 del dirs[:]
                 continue
             dirname = os.path.basename(d)
@@ -146,8 +147,8 @@ def process_package(package_name, soft_fail=True):
     )
     if not package_path:
         if not soft_fail:
-            raise RuntimeError("Failed to find package.xml for package "
-                               + package_name + ' in ' + ';'.join(workspaces))
+            raise RuntimeError("Failed to find package.xml for package " +
+                               package_name + ' in ' + ';'.join(workspaces))
         else:
             # This is not an ament dependency
             return [], []

@@ -33,16 +33,19 @@ try:
     from ament_virtualenv.combine_requirements import combine_requirements
     from ament_virtualenv.build_venv import build_venv
     ament_virtualenv_import_failed = False
-except:
+except ImportError:
     ament_virtualenv_import_failed = True
 #
 
+
 def find_program(name='build_venv.py', package='ament_virtualenv'):
-    '''
+    """
+    Find modules which are part of this package.
+
     Helper function to find the modules that are part of this
     package (glob_requirements, combine_requirements, build_venv),
     in cases where a direct import failes due to python path issues.
-    '''
+    """
     ament_prefix_path = os.environ.get("AMENT_PREFIX_PATH")
     if not ament_prefix_path:
         return None
@@ -61,7 +64,7 @@ def find_program(name='build_venv.py', package='ament_virtualenv'):
 def install_venv(install_base, package_name, python_version='2'):
     venv_install_dir = os.path.join(install_base, 'venv')
     bin_dir = os.path.join(install_base, 'bin')
-    # 
+    #
     # Build the virtual environment
     python = shutil.which("python3")
     if not python:
@@ -71,14 +74,15 @@ def install_venv(install_base, package_name, python_version='2'):
             return 1
 
     # glob_requirements --package-name ament_cmake_haros
-    if ament_virtualenv_import_failed == True:
+    if ament_virtualenv_import_failed is True:
         # Fallback: try to find the command line script and run it
-        glob_requirements_py = find_program(name='glob_requirements.py', package='ament_virtualenv')
+        glob_requirements_py = find_program(name='glob_requirements.py',
+                                            package='ament_virtualenv')
         if not glob_requirements_py:
             print("ERROR: Failed to locate glob_requirements", file=sys.stderr)
             return 1
         cmd = [
-            python, 
+            python,
             glob_requirements_py,
             '--package-name',
             package_name
@@ -92,9 +96,11 @@ def install_venv(install_base, package_name, python_version='2'):
     #
     # combine_requirements --requirements-list a/requirements.txt;b/requirements.txt
     #                      --output-file x/generated_requirements.txt
-    generated_requirements = os.path.join(install_base, package_name + '-generated_requirements.txt')
+    generated_requirements = os.path.join(install_base,
+                                          package_name + '-generated_requirements.txt')
     if ament_virtualenv_import_failed:
-        combine_requirements_py = find_program(name='combine_requirements.py', package='ament_virtualenv')
+        combine_requirements_py = find_program(name='combine_requirements.py',
+                                               package='ament_virtualenv')
         if not combine_requirements_py:
             print("ERROR: Failed to locate combine_requirements", file=sys.stderr)
             return 1
@@ -136,9 +142,9 @@ def install_venv(install_base, package_name, python_version='2'):
             # '--use-system-packages',
             '--extra-pip-args', '\"-qq\"',
         ]
-        ret = subprocess.check_output(cmd)
+        subprocess.check_output(cmd)
     else:
-        ret = build_venv(
+        build_venv(
             root_dir=venv_install_dir,
             python_version=python_version,
             requirements_filename=generated_requirements,
@@ -146,16 +152,17 @@ def install_venv(install_base, package_name, python_version='2'):
             extra_pip_args="-qq",
             retries=3
         )
-    # 
+    #
     # Wrapper shell executables we installed
     for bin_file in os.listdir(bin_dir):
         if bin_file[-5:] == '-venv':
-            continue # possible left-over from last installation
+            # possible left-over from last installation
+            continue
         # rename file from 'xxx' to 'xxx-venv'
         bin_path = os.path.join(bin_dir, bin_file)
         if not os.path.isfile(bin_path):
             continue
-        os.rename(bin_path, bin_path+'-venv')
+        os.rename(bin_path, bin_path + '-venv')
         venv_rel_path = os.path.relpath(venv_install_dir, bin_dir)
         # create new file with the name of the previous file
         with open(bin_path, "w") as f:
@@ -166,7 +173,8 @@ def install_venv(install_base, package_name, python_version='2'):
             f.write("if __name__ == '__main__':\n")
             f.write("    dir_path = os.path.dirname(os.path.realpath(__file__))\n")
             f.write("    bin_path = os.path.join(dir_path, '" + bin_file + "-venv')\n")
-            f.write("    vpy_path = os.path.abspath(os.path.join(dir_path, '" + venv_rel_path +"'))\n")
+            f.write("    vpy_path = os.path.abspath(os.path.join(dir_path, '")
+            f.write(venv_rel_path + "'))\n")
             f.write("    vpy_path = os.path.join(vpy_path, 'bin', 'python')\n")
             f.write("    cmd = vpy_path + ' ' + bin_path\n")
             f.write("    if len(sys.argv) > 1:\n")
@@ -177,6 +185,7 @@ def install_venv(install_base, package_name, python_version='2'):
         os.chmod(bin_path, st.st_mode | stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     #
     return 0
+
 
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser()

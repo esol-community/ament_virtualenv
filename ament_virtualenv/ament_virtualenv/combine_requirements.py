@@ -31,10 +31,10 @@ from packaging.requirements import Requirement, InvalidRequirement
 
 try:
     from ament_virtualenv.requirements import VcsRequirement
-except:
+except ImportError:
     try:
         from requirements import VcsRequirement
-    except:
+    except ImportError:
         from .requirements import VcsRequirement
 
 comment_regex = re.compile(r'\s*#\s.*$', flags=re.MULTILINE)
@@ -73,10 +73,8 @@ def combine_requirements(requirements_list, output_file):
                     )
                 else:
                     combined_requirements[requirement.name].suppressed_set.add(
-                        SuppressedRequirement(
-                            requirement=requirement,
-                            source=requirements_file.name)
-                        )
+                        SuppressedRequirement(requirement=requirement,
+                                              source=requirements_file.name))
 
     for entry in combined_requirements.values():
         output_file.write("{} # from {}\n".format(entry.requirement, entry.source))

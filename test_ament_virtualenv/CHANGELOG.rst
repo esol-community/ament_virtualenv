@@ -2,6 +2,10 @@
 Changelog for package test_ament_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.5 (2020-01-10)
+------------------
+* fixed various bugs identified by CI
+
 0.0.4 (2019-12-09)
 ------------------
 * added fallbacks for different environments

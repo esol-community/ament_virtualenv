@@ -26,17 +26,20 @@ import stat
 import sys
 import argparse
 
+
 def wrap_package(bin_dir, venv_install_dir):
     for bin_file in os.listdir(bin_dir):
         if bin_file[-3:] != '.py':
-            continue # only wrap python files
+            # only wrap python files
+            continue
         if bin_file[-5:] == '__.py':
-            continue # don't wrap __init__.py etc
+            # don't wrap __init__.py etc
+            continue
         bin_path = os.path.join(bin_dir, bin_file)
         if not os.path.isfile(bin_path):
             continue
         # rename file from 'xxx.py' to 'xxx.py-venv'
-        os.rename(bin_path, bin_path+'-venv')
+        os.rename(bin_path, bin_path + '-venv')
         venv_rel_path = os.path.relpath(venv_install_dir, bin_dir)
         # create new file with the name of the previous file
         with open(bin_path, "w") as f:
@@ -47,7 +50,8 @@ def wrap_package(bin_dir, venv_install_dir):
             f.write("if __name__ == '__main__':\n")
             f.write("    dir_path = os.path.dirname(os.path.realpath(__file__))\n")
             f.write("    bin_path = os.path.join(dir_path, '" + bin_file + "-venv')\n")
-            f.write("    vpy_path = os.path.abspath(os.path.join(dir_path, '" + venv_rel_path +"'))\n")
+            f.write("    vpy_path = os.path.abspath(os.path.join(dir_path, '")
+            f.write(venv_rel_path + "'))\n")
             f.write("    vpy_path = os.path.join(vpy_path, 'bin', 'python')\n")
             f.write("    cmd = vpy_path + ' ' + bin_path\n")
             f.write("    if len(sys.argv) > 1:\n")

@@ -125,8 +125,9 @@ class Deployment(object):
         # Keep a copy with well-suported options only (for upgrading pip itself)
         self.pip_upgrade_args = self.pip_args[:]
 
-        # Add in any user supplied pip args
-        extra_pip_arg = [e for e in extra_pip_arg if e != ''] # remove empty strings
+        # Add in any user supplied pip args,
+        # removing empty strings.
+        extra_pip_arg = [e for e in extra_pip_arg if e != '']
         self.pip_args.extend(extra_pip_arg)
 
         # (pbovbel) Set pip_upgrade_args here to keep flags like -q, disregard L111 above.

@@ -26,13 +26,14 @@ import stat
 import sys
 import argparse
 
+
 def wrap_module(bin_path, venv_install_dir):
     if not os.path.isfile(bin_path):
         return -1
-    bin_dir  = os.path.dirname(bin_path)
+    bin_dir = os.path.dirname(bin_path)
     bin_file = os.path.basename(bin_path)
     # rename file from 'xxx' to 'xxx-venv'
-    os.rename(bin_path, bin_path+'-venv')
+    os.rename(bin_path, bin_path + '-venv')
     venv_rel_path = os.path.relpath(venv_install_dir, bin_dir)
     # create new file with the name of the previous file
     with open(bin_path, "w") as f:
@@ -43,7 +44,8 @@ def wrap_module(bin_path, venv_install_dir):
         f.write("if __name__ == '__main__':\n")
         f.write("    dir_path = os.path.dirname(os.path.realpath(__file__))\n")
         f.write("    bin_path = os.path.join(dir_path, '" + bin_file + "-venv')\n")
-        f.write("    vpy_path = os.path.abspath(os.path.join(dir_path, '" + venv_rel_path +"'))\n")
+        f.write("    vpy_path = os.path.abspath(os.path.join(dir_path, '")
+        f.write(venv_rel_path + "'))\n")
         f.write("    vpy_path = os.path.join(vpy_path, 'bin', 'python')\n")
         f.write("    cmd = vpy_path + ' ' + bin_path\n")
         f.write("    if len(sys.argv) > 1:\n")

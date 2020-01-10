@@ -111,7 +111,13 @@ def main(argv=sys.argv[1:]):
         retries=args.retries
     )
 
-def build_venv(root_dir, python_version, requirements_filename, use_system_packages=False, extra_pip_args="", retries=0):
+
+def build_venv(root_dir,
+               python_version,
+               requirements_filename,
+               use_system_packages=False,
+               extra_pip_args="",
+               retries=0):
     root_dir = os.path.realpath(root_dir)
     python_executable = find_python(python_version)
     os.environ['DH_VIRTUALENV_INSTALL_ROOT'] = os.path.dirname(root_dir)
