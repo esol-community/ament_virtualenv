@@ -1,25 +1,21 @@
-# Software License Agreement (GPL)
+# Copyright 2019-2020 eSOL Co.,Ltd.
 #
-# \file      ament_generate_virtualenv.cmake
-# \authors   Max Krichenbauer <v-krichenbauer7715@esol.co.jp>
-# \copyright Copyright (c) (2019), eSol, All rights reserved.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# This program is free software: you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation, either version 2 of the
-# License, or (at your option) any later version.
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 function(ament_generate_virtualenv)
   set(oneValueArgs PYTHON_VERSION PYTHON_VERSION_MAJOR USE_SYSTEM_PACKAGES ISOLATE_REQUIREMENTS)
   set(multiValueArgs EXTRA_PIP_ARGS)
-  cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   # Check if this package already has a virtualenv target before creating one
   if(TARGET ${PROJECT_NAME}_generate_virtualenv)
@@ -45,7 +41,7 @@ function(ament_generate_virtualenv)
     set(ARG_ISOLATE_REQUIREMENTS FALSE)
   endif()
 
-  if (NOT DEFINED ARG_EXTRA_PIP_ARGS)
+  if(NOT DEFINED ARG_EXTRA_PIP_ARGS)
     set(ARG_EXTRA_PIP_ARGS "-qq")
   endif()
   # Convert CMake list to ' '-separated list
@@ -66,7 +62,7 @@ function(ament_generate_virtualenv)
 
   # Collect all exported pip requirements files, from this package and all dependencies
   find_program(glob_requirements_BIN NAMES "glob_requirements"
-               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
+    PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
   if(NOT glob_requirements_BIN)
     message(FATAL_ERROR "could not find program 'glob_requirements'")
   endif()
@@ -88,7 +84,7 @@ function(ament_generate_virtualenv)
 
   # Combine requirements into one list
   find_program(combine_requirements_BIN NAMES "combine_requirements"
-               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
+    PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
   if(NOT combine_requirements_BIN)
     message(FATAL_ERROR "could not find program 'combine_requirements'")
   endif()
@@ -105,7 +101,7 @@ function(ament_generate_virtualenv)
 
   # Generate a virtualenv, fixing up paths for install-space
   find_program(build_venv_BIN NAMES "build_venv"
-               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
+    PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
   if(NOT build_venv_BIN)
     message(FATAL_ERROR "could not find program 'build_venv'")
   endif()
@@ -134,7 +130,7 @@ function(ament_generate_virtualenv)
 
   # Override the ament_python_install_module macro to wrap modules
   find_program(wrap_module_BIN NAMES "wrap_module"
-               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
+    PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
   if(NOT wrap_module_BIN)
     message(FATAL_ERROR "could not find program 'wrap_module'")
   endif()
@@ -149,7 +145,7 @@ function(ament_generate_virtualenv)
 
   # Override the ament_python_install_package macro to wrap packages
   find_program(wrap_package_BIN NAMES "wrap_package"
-               PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
+    PATHS "${CMAKE_INSTALL_PREFIX}/../ament_virtualenv/bin/")
   if(NOT wrap_package_BIN)
     message(FATAL_ERROR "could not find program 'wrap_package'")
   endif()
